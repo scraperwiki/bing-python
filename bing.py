@@ -178,7 +178,7 @@ class API(object):
                     'Parameters `{}` not accepted.'.format(list(diff))
                 )
 
-    def transform(results, srctype):
+    def transform(self, results, srctype):
         """ Overwrite this method if you want your results transformed
             prior to being returned by the `query` method """
         return results
