@@ -1,5 +1,5 @@
-Bing Search API
----------------
+Python wrapper for Bing API
+----------------------------
 
 Usage:
 
