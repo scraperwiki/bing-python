@@ -32,16 +32,12 @@ except ImportError:
 __version__ = '0.1.1'
 
 
-# -- Helpers ------
-
 def enquote(value):
     return "'{}'".format(value)
 
 def double(value):
     return float(value)
 
-
-# -- Contants ---------
 
 BING_URL = 'https://api.datamarket.azure.com/Bing/Search/v1/{srctype}?{params}&$format=json'
 BING_SRCTYPE_PARAMS = {
@@ -128,7 +124,6 @@ BING_SRCTYPE_PARAMS = {
 }
 
 
-# -- Code ---------
 
 class BingError(Exception):
     pass
