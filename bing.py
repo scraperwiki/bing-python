@@ -35,6 +35,7 @@ __version__ = '0.1.1'
 def enquote(value):
     return "'{}'".format(value)
 
+
 def double(value):
     return float(value)
 
@@ -131,7 +132,6 @@ class BingError(Exception):
 
 class API(object):
     """ Interacting with Bing APIs """
-
     def __init__(self, key):
         self.key = key
         self.password = base64.b64encode(':' + self.key)
