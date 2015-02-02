@@ -177,7 +177,8 @@ class API(object):
             prior to being returned by the `query` method """
         return results
 
-    def query(self, query, srctype='Web', offset=0, count=50, sources=None, **extra):
+    def query(self, query, srctype='Web', offset=0, count=50, sources=None,
+              **extra):
         """ Query the Bing API
 
             Params:
@@ -185,7 +186,8 @@ class API(object):
                 `srctype`   : the source type where to search
                 `offset`    : results page offset
                 `count`     : total number of results
-                `sources`   : the sources where to look for results e.q. 'web+news+spell'
+                `sources`   : the sources where to look for results
+                              e.g. 'web+news+spell'
                 `**extra`   : other official Bing parameters """
 
         # Required Params
@@ -208,7 +210,8 @@ class API(object):
                 params[key] = BING_SRCTYPE_PARAMS[srctype][key](value)
 
         url = BING_URL.format(srctype=srctype, params=urllib.urlencode(params))
-        data = self.fetch(url, headers={'Authorization': "Basic " + self.password})
+        data = self.fetch(url,
+                          headers={'Authorization': "Basic " + self.password})
 
         # Extract results
         results = None
