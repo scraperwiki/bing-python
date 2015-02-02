@@ -40,7 +40,6 @@ def double(value):
     return float(value)
 
 
-BING_URL = 'https://api.datamarket.azure.com/Bing/Search/v1/{srctype}?{params}&$format=json'
 BING_SRCTYPE_PARAMS = {
 
     'Composite': {
@@ -133,6 +132,9 @@ class BingError(Exception):
 
 class API(object):
     """ Interacting with Bing APIs """
+    BING_URL = ('https://api.datamarket.azure.com/Bing/Search/v1'
+                '/{srctype}?{params}&$format=json')
+
     def __init__(self, key):
         self.key = key
         self.password = base64.b64encode(':' + self.key)
@@ -209,7 +211,8 @@ class API(object):
             for key, value in extra.items():
                 params[key] = BING_SRCTYPE_PARAMS[srctype][key](value)
 
-        url = BING_URL.format(srctype=srctype, params=urllib.urlencode(params))
+        url = self.BING_URL.format(
+            srctype=srctype, params=urllib.urlencode(params))
         data = self.fetch(url,
                           headers={'Authorization': "Basic " + self.password})
 
