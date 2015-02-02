@@ -139,7 +139,8 @@ class API(object):
         self.key = key
         self.password = base64.b64encode(':' + self.key)
 
-    def fetch(self, url, headers):
+    @staticmethod
+    def fetch(url, headers):
         """ Fetch from remote server """
         req = requests.get(url, headers=headers)
         return req.json()
