@@ -16,8 +16,6 @@ news_results = api.query('hello world', srctype='News')
 ```
 ------------------------------------------------------------
 """
-
-import json
 import base64
 import urllib
 import logging
