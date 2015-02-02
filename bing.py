@@ -127,6 +127,7 @@ BING_SRCTYPE_PARAMS = {
 
 
 class BingError(Exception):
+    """ General exception for Bing errors. """
     pass
 
 
