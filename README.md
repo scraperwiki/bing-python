@@ -7,7 +7,7 @@ Usage:
 
 import bing
 
-api = bing.API('your-key')
+api = bing.Api('your-key')
 
 web_results = api.query('hello world')
 news_results = api.query('hello world', srctype='News')
