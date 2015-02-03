@@ -5,8 +5,8 @@ from os import path
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
-with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
-    long_description = f.read()
+#with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
+#   long_description = f.read()
 
 setup(
     name='bing',
@@ -17,7 +17,7 @@ setup(
     version='1.2.0',
 
     description='Access the Bing Search API',
-    long_description=long_description,
+    #long_description=long_description,
 
     # The project's main homepage.
     url='https://github.com/scraperwiki/bing-python',
