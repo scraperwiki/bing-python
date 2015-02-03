@@ -10,7 +10,7 @@ Usage:
 
 import bing
 
-api = bing.API('your-key')
+api = bing.Api('your-key')
 
 web_results = api.query('hello world')
 news_results = api.query('hello world', srctype='News')
@@ -132,7 +132,7 @@ class BingError(Exception):
     pass
 
 
-class API(object):
+class Api(object):
     """ Interacting with Bing APIs """
     BING_SRCTYPE_PARAMS = BingSourceTypeParameters().params
     BING_URL = ('https://api.datamarket.azure.com/Bing/Search/v1'
