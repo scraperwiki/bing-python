@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# encoding: utf-8
 """
 Bing Search API
 ---------------
@@ -8,7 +10,7 @@ Usage:
 
 import bing
 
-api = bing.API('your-key')
+api = bing.Api('your-key')
 
 web_results = api.query('hello world')
 news_results = api.query('hello world', srctype='News')
@@ -16,8 +18,8 @@ news_results = api.query('hello world', srctype='News')
 ```
 ------------------------------------------------------------
 """
+from __future__ import unicode_literals
 
-import json
 import base64
 import urllib
 import logging
@@ -34,116 +36,116 @@ except ImportError:
 __version__ = '0.1.1'
 
 
-# -- Helpers ------
-
 def enquote(value):
     return "'{}'".format(value)
+
 
 def double(value):
     return float(value)
 
 
-# -- Contants ---------
+class BingSourceTypeParameters(object):
+    def __init__(self):
+        self.bing_srctype_params = {
+            'Composite': {
+                'Query':                enquote,  # xbox
+                'Sources':              enquote,  # web+image+video+news+spell
+                'Adult':                enquote,  # Moderate
+                'ImageFilters':         enquote,  # Size:Small+Aspect:Square
+                'Latitude':             double,   # 47.603450
+                'Longitude':            double,   # -122.329696
+                'Market':               enquote,  # en-US
+                'NewsCategory':         enquote,  # rt_Business
+                'NewsLocationOverride': enquote,  # US.WA
+                'NewsSortBy':           enquote,  # Date
+                'Options':              enquote,  # EnableHighlighting
+                'VideoFilters':         enquote,  # Duration:Short+Resolution:High
+                'VideoSortBy':          enquote,  # Date
+                'WebFileType':          enquote,  # XLS
+                'WebSearchOptions':     enquote,  # DisableQueryAlterations
+            },
 
-BING_URL = 'https://api.datamarket.azure.com/Bing/Search/v1/{srctype}?{params}&$format=json'
-BING_SRCTYPE_PARAMS = {
+            'Web': {
+                'Query':                enquote,  # xbox
+                'Adult':                enquote,  # Moderate
+                'Latitude':             double,   # 47.603450
+                'Longitude':            double,   # -122.329696
+                'Market':               enquote,  # en-US
+                'Options':              enquote,  # EnableHighlighting
+                'WebFileType':          enquote,  # XLS
+                'WebSearchOptions':     enquote,  # DisableQueryAlterations
+            },
 
-    'Composite': {
-        'Query':                enquote,    # xbox
-        'Sources':              enquote,    # web+image+video+news+spell
-        'Adult':                enquote,    # Moderate
-        'ImageFilters':         enquote,    # Size:Small+Aspect:Square
-        'Latitude':             double,     # 47.603450
-        'Longitude':            double,     # -122.329696
-        'Market':               enquote,    # en-US
-        'NewsCategory':         enquote,    # rt_Business
-        'NewsLocationOverride': enquote,    # US.WA
-        'NewsSortBy':           enquote,    # Date
-        'Options':              enquote,    # EnableHighlighting
-        'VideoFilters':         enquote,    # Duration:Short+Resolution:High
-        'VideoSortBy':          enquote,    # Date
-        'WebFileType':          enquote,    # XLS
-        'WebSearchOptions':     enquote,    # DisableQueryAlterations
-    },
+            'Image': {
+                'Query':                enquote,  # xbox
+                'Adult':                enquote,  # Moderate
+                'ImageFilters':         enquote,  # Size:Small+Aspect:Square
+                'Latitude':             double,   # 47.603450
+                'Longitude':            double,   # -122.329696
+                'Market':               enquote,  # en-US
+                'Options':              enquote,  # EnableHighlighting
+            },
 
-    'Web': {
-        'Query':                enquote,    # xbox
-        'Adult':                enquote,    # Moderate
-        'Latitude':             double,     # 47.603450
-        'Longitude':            double,     # -122.329696
-        'Market':               enquote,    # en-US
-        'Options':              enquote,    # EnableHighlighting
-        'WebFileType':          enquote,    # XLS
-        'WebSearchOptions':     enquote,    # DisableQueryAlterations
-    },
+            'Video': {
+                'Query':                enquote,  # xbox
+                'Adult':                enquote,  # Moderate
+                'Latitude':             double,   # 47.603450
+                'Longitude':            double,   # -122.329696
+                'Market':               enquote,  # en-US
+                'Options':              enquote,  # EnableHighlighting
+                'VideoFilters':         enquote,  # Duration:Short+Resolution:High
+                'VideoSortBy':          enquote,  # Date
+            },
 
-    'Image': {
-        'Query':                enquote,    # xbox
-        'Adult':                enquote,    # Moderate
-        'ImageFilters':         enquote,    # Size:Small+Aspect:Square
-        'Latitude':             double,     # 47.603450
-        'Longitude':            double,     # -122.329696
-        'Market':               enquote,    # en-US
-        'Options':              enquote,    # EnableHighlighting
-    },
+            'News': {
+                'Query':                enquote,    # xbox
+                'Adult':                enquote,    # Moderate
+                'Latitude':             double,     # 47.603450
+                'Longitude':            double,     # -122.329696
+                'Market':               enquote,    # en-US
+                'NewsCategory':         enquote,    # rt_Business
+                'NewsLocationOverride': enquote,    # US.WA
+                'NewsSortBy':           enquote,    # Date
+                'Options':              enquote,    # EnableHighlighting
+            },
 
-    'Video': {
-        'Query':                enquote,    # xbox
-        'Adult':                enquote,    # Moderate
-        'Latitude':             double,     # 47.603450
-        'Longitude':            double,     # -122.329696
-        'Market':               enquote,    # en-US
-        'Options':              enquote,    # EnableHighlighting
-        'VideoFilters':         enquote,    # Duration:Short+Resolution:High
-        'VideoSortBy':          enquote,    # Date
-    },
+            'RelatedSearch': {
+                'Query':                enquote,    # xbox
+                'Adult':                enquote,    # Moderate
+                'Latitude':             double,     # 47.603450
+                'Longitude':            double,     # -122.329696
+                'Market':               enquote,    # en-US
+                'Options':              enquote,    # EnableHighlighting
+            },
 
-    'News': {
-        'Query':                enquote,    # xbox
-        'Adult':                enquote,    # Moderate
-        'Latitude':             double,     # 47.603450
-        'Longitude':            double,     # -122.329696
-        'Market':               enquote,    # en-US
-        'NewsCategory':         enquote,    # rt_Business
-        'NewsLocationOverride': enquote,    # US.WA
-        'NewsSortBy':           enquote,    # Date
-        'Options':              enquote,    # EnableHighlighting
-    },
+            'SpellingSuggestion': {
+                'Query':                enquote,    # xblox
+                'Adult':                enquote,    # Moderate
+                'Latitude':             double,     # 47.603450
+                'Longitude':            double,     # -122.329696
+                'Market':               enquote,    # en-US
+                'Options':              enquote,    # EnableHighlighting
+            }
+        }
 
-    'RelatedSearch': {
-        'Query':                enquote,    # xbox
-        'Adult':                enquote,    # Moderate
-        'Latitude':             double,     # 47.603450
-        'Longitude':            double,     # -122.329696
-        'Market':               enquote,    # en-US
-        'Options':              enquote,    # EnableHighlighting
-    },
-
-    'SpellingSuggestion': {
-        'Query':                enquote,    # xblox
-        'Adult':                enquote,    # Moderate
-        'Latitude':             double,     # 47.603450
-        'Longitude':            double,     # -122.329696
-        'Market':               enquote,    # en-US
-        'Options':              enquote,    # EnableHighlighting
-    }
-}
-
-
-# -- Code ---------
 
 class BingError(Exception):
+    """ General exception for Bing errors. """
     pass
 
 
-class API(object):
+class Api(object):
     """ Interacting with Bing APIs """
+    BING_SRCTYPE_PARAMS = BingSourceTypeParameters().bing_srctype_params
+    BING_URL = ('https://api.datamarket.azure.com/Bing/Search/v1'
+                '/{srctype}?{params}&$format=json')
 
     def __init__(self, key):
         self.key = key
         self.password = base64.b64encode(':' + self.key)
 
-    def fetch(self, url, headers):
+    @staticmethod
+    def fetch(url, headers):
         """ Fetch from remote server """
         req = requests.get(url, headers=headers)
         return req.json()
@@ -151,10 +153,11 @@ class API(object):
     def check(self, srctype, sources, extra):
         """ Check if srctype, sources and the co. are correct """
 
-        if srctype not in BING_SRCTYPE_PARAMS:
+        if srctype not in self.BING_SRCTYPE_PARAMS:
             raise BingError(
                 'Invalid `srctype`. '
-                'Accepted values are: {}'.format(BING_SRCTYPE_PARAMS.keys())
+                'Accepted values are: {}'.format(
+                    self.BING_SRCTYPE_PARAMS.keys())
             )
 
         if srctype == 'Composite':
@@ -171,7 +174,7 @@ class API(object):
                         'Valid sources are: {}'.format(accepted)
                     )
         if extra:
-            accepted = BING_SRCTYPE_PARAMS[srctype]
+            accepted = self.BING_SRCTYPE_PARAMS[srctype]
             diff = set(extra.keys()) - set(accepted)
             if diff:
                 raise BingError(
@@ -183,7 +186,8 @@ class API(object):
             prior to being returned by the `query` method """
         return results
 
-    def query(self, query, srctype='Web', offset=0, count=50, sources=None, **extra):
+    def query(self, query, srctype='Web', offset=0, count=50, sources=None,
+              **extra):
         """ Query the Bing API
 
             Params:
@@ -191,7 +195,8 @@ class API(object):
                 `srctype`   : the source type where to search
                 `offset`    : results page offset
                 `count`     : total number of results
-                `sources`   : the sources where to look for results e.q. 'web+news+spell'
+                `sources`   : the sources where to look for results
+                              e.g. 'web+news+spell'
                 `**extra`   : other official Bing parameters """
 
         # Required Params
@@ -211,10 +216,12 @@ class API(object):
         # Attach extra parameters
         if extra:
             for key, value in extra.items():
-                params[key] = BING_SRCTYPE_PARAMS[srctype][key](value)
+                params[key] = self.BING_SRCTYPE_PARAMS[srctype][key](value)
 
-        url = BING_URL.format(srctype=srctype, params=urllib.urlencode(params))
-        data = self.fetch(url, headers={'Authorization': "Basic " + self.password})
+        url = self.BING_URL.format(
+            srctype=srctype, params=urllib.urlencode(params))
+        data = self.fetch(url,
+                          headers={'Authorization': "Basic " + self.password})
 
         # Extract results
         results = None
