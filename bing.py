@@ -154,7 +154,8 @@ class API(object):
         if srctype not in self.BING_SRCTYPE_PARAMS:
             raise BingError(
                 'Invalid `srctype`. '
-                'Accepted values are: {}'.format(self.BING_SRCTYPE_PARAMS.keys())
+                'Accepted values are: {}'.format(
+                    self.BING_SRCTYPE_PARAMS.keys())
             )
 
         if srctype == 'Composite':
