@@ -132,7 +132,7 @@ class BingError(Exception):
 
 class API(object):
     """ Interacting with Bing APIs """
-    BING_SRCTYPE_PARAMS = BingSourceTypeParameters()
+    BING_SRCTYPE_PARAMS = BingSourceTypeParameters().params
     BING_URL = ('https://api.datamarket.azure.com/Bing/Search/v1'
                 '/{srctype}?{params}&$format=json')
 
